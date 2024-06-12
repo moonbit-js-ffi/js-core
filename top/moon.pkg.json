@@ -1,0 +1,8 @@
+{
+  "import": [
+    {
+      "path": "moonbit-js-ffi/js",
+      "alias": "js"
+    }
+  ]
+}
