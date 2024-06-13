@@ -56,6 +56,8 @@ pub extern "js" fn is_object(self : JsValue) -> Bool = #|(n) => typeof n === 'ob
 
 pub extern "js" fn is_symbol(self : JsValue) -> Bool = #|(n) => typeof n === 'symbol'
 
+pub extern "js" fn is_function(self : JsValue) -> Bool = #|(n) => typeof n === 'function'
+
 pub extern "js" fn get_globalThis() -> JsValue = #|() => globalThis
 
 pub let globalThis : JsValue = get_globalThis()
@@ -74,7 +76,7 @@ pub fn get_with_string[T : FromJsValue](self : JsValue, key : String) -> T {
   self.get_with_string_js(JsString::from_string(key))
 }
 
-pub fn get_with_symbol[T : FromJsValue](self : JsValue, key : JS_Symbol) -> T {
+pub fn get_with_symbol[T : FromJsValue](self : JsValue, key : JsSymbol) -> T {
   self.get_ffi(key |> to_js_value) |> from_js_value
 }
 
@@ -95,7 +97,7 @@ pub fn set_with_string[T : ToJsValue](
 
 pub fn set_with_symbol[T : ToJsValue](
   self : JsValue,
-  key : JS_Symbol,
+  key : JsSymbol,
   value : T
 ) -> Unit {
   self.set_ffi(key |> to_js_value, value |> to_js_value)
@@ -117,7 +119,8 @@ pub extern "js" fn JsValue::apply_ffi(
   self : JsValue,
   this : JsValue,
   args : JsValue
-) -> JsValue = #|(func, thisArg, args) => func.apply(thisArg, args)
+) -> JsValue =
+  #|(func, thisArg, args) => func.apply(thisArg, args)
 
 pub fn JsValue::apply_js[This : ToJsValue, Arg : ToJsValue, Result : FromJsValue](
   self : JsValue,
@@ -135,3 +138,48 @@ pub fn JsValue::apply[This : ToJsValue, Arg : ToJsValue, Result : FromJsValue](
   self.apply_js(this, JsArray::from_array(args))
 }
 
+pub extern "js" fn JsValue::call_ffi(
+  self : JsValue,
+  this : JsValue,
+  args : JsValue
+) -> JsValue =
+  #|(func, thisArg, ...args) => func.call(thisArg, ...args)
+
+pub fn JsValue::call_js[This : ToJsValue, Arg : ToJsValue, Result : FromJsValue](
+  self : JsValue,
+  this : This,
+  args : JsArray[Arg]
+) -> Result {
+  self.call_ffi(this |> to_js_value, args |> to_js_value) |> from_js_value
+}
+
+pub fn JsValue::call[This : ToJsValue, Arg : ToJsValue, Result : FromJsValue](
+  self : JsValue,
+  this : This,
+  args : Array[Arg]
+) -> Result {
+  self.call_js(this, JsArray::from_array(args))
+}
+
+pub extern "js" fn JsValue::bind_ffi(
+  self : JsValue,
+  this : JsValue,
+  args : JsValue
+) -> JsValue =
+  #|(func, thisArg, ...args) => func.bind(thisArg, ...args)
+
+pub fn JsValue::bind_js[This : ToJsValue, Arg : ToJsValue, Result : FromJsValue](
+  self : JsValue,
+  this : This,
+  args : JsArray[Arg]
+) -> Result {
+  self.bind_ffi(this |> to_js_value, args |> to_js_value) |> from_js_value
+}
+
+pub fn JsValue::bind[This : ToJsValue, Arg : ToJsValue, Result : FromJsValue](
+  self : JsValue,
+  this : This,
+  args : Array[Arg]
+) -> Result {
+  self.bind_js(this, JsArray::from_array(args))
+}

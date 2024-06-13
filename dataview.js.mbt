@@ -1,4 +1,4 @@
-type DataView JsValue
+pub type DataView JsValue
 
 pub fn FromJsValue::from_js_value(value : JsValue) -> DataView {
   DataView(value)

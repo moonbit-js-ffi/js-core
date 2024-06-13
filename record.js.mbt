@@ -1,4 +1,4 @@
-type Record JsValue
+pub type Record JsValue
 
 pub extern "js" fn Record::get_ffi(self : JsValue, key : JsValue) -> JsValue =
   #|(object, key) => object[key]

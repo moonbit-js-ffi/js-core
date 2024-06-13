@@ -1,4 +1,4 @@
-type Console JsValue
+pub type Console JsValue
 
 pub extern "js" fn console_log_ffi(message : JsValue) =
   #|(message) => console.log(message)

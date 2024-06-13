@@ -1,4 +1,4 @@
-type Uint8Array JsValue
+pub type Uint8Array JsValue
 
 pub fn FromJsValue::from_js_value(value : JsValue) -> Uint8Array {
   Uint8Array(value)

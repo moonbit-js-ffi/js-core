@@ -35,3 +35,8 @@ fn init {
   )
   |> ignore
 }
+
+fn init {
+  let a = @js.JsFunction::new(fn { x => @js.log(x + 1) })
+  a |> @js.call(@js.null(), [12])
+}
